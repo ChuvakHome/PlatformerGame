@@ -50,8 +50,6 @@ public class EntityPlayer extends EntityHuman
 	
 	private static String marcusDamagingFallingFrame0Resource = "resources/level/testGame/textures/marcus/damaging/falling/0.png";
 	
-//	private static String damageResource = "resources/level/testGame/sounds/damage.wav";
-	
 	private static URL marcusStandingFrame0ResourceURL = ResourceUtil.getURL(marcusStandingFrame0Resource);
 	
 	private static URL marcusJumpingLeftFrame0ResourceURL = ResourceUtil.getURL(marcusJumpingLeftFrame0Resource);
@@ -83,16 +81,10 @@ public class EntityPlayer extends EntityHuman
 	private static String damageSoundResource = "resources/level/testGame/sounds/damage.wav";
 	
 	private static URL damageSoundResourceURL = ResourceUtil.getURL(damageSoundResource);
-//	
-//	private int relaxationTime = 0;
-//	
-//	private int relaxationTime2 = 0;
 	
 	private static String soundResource = "resources/level/testGame/sounds/weapons/gauss/gauss_shoot.wav";
 	
 	private static URL soundResourceURL = ResourceUtil.getURL(soundResource);
-	
-//	private Item currentItem;
 	
 	private boolean active;
 	
@@ -235,23 +227,6 @@ public class EntityPlayer extends EntityHuman
 	public void update()
 	{
 		super.update();
-	
-//		if (collision(EntityEnemy.class) && relaxationTime == 0)
-//		{	
-//			SoundHandler.play(damageResourceURL);
-//			
-//			damaging = !damaging ? true : damaging;
-//			
-//			relaxationTime = DAMAGE_IGNORE_TIME;
-//			relaxationTime2 = DAMAGE_IGNORE_TIME2;
-//		}
-//		else if (relaxationTime > 0)
-//			--relaxationTime;
-//		
-//		if (relaxationTime2 > 0)
-//			--relaxationTime2;
-//		else if (relaxationTime == 0)
-//			damaging = false;
 		
 		String name = getCurrentSequenceName();
 		
@@ -308,5 +283,82 @@ public class EntityPlayer extends EntityHuman
 	public boolean isActive()
 	{
 		return active;
+	}
+	
+	protected void destroyGameObject()
+	{
+		super.destroyGameObject();
+		
+		marcusStandingFrame0Resource = null;
+		
+		marcusRunningLeftResource = null;
+		
+		marcusRunningRightResource = null;
+		
+		marcusJumpingLeftFrame0Resource = null;
+		
+		marcusJumpingRightFrame0Resource = null;
+		
+		marcusJumpingFrame0Resource = null;
+		
+		marcusFallingLeftFrame0Resource = null;
+		
+		marcusFallingRightFrame0Resource = null;
+		
+		marcusFallingFrame0Resource = null;
+		
+		marcusDamagingStandingFrame0Resource = null;
+		
+		marcusDamagingRunningLeftResource = null;
+		
+		marcusDamagingRunningRightResource = null;
+		
+		marcusDamagingJumpingLeftFrame0Resource = null;
+		
+		marcusDamagingJumpingRightFrame0Resource = null;
+		
+		marcusDamagingJumpingFrame0Resource = null;
+		
+		marcusDamagingFallingLeftFrame0Resource = null;
+		
+		marcusDamagingFallingRightFrame0Resource = null;
+		
+		marcusDamagingFallingFrame0Resource = null;
+		
+		marcusStandingFrame0ResourceURL = null;
+		
+		marcusJumpingLeftFrame0ResourceURL = null;
+		
+		marcusJumpingRightFrame0ResourceURL = null;
+		
+		marcusJumpingFrame0ResourceURL = null;
+		
+		marcusFallingLeftFrame0ResourceURL = null;
+		
+		marcusFallingRightFrame0ResourceURL = null;
+		
+		marcusFallingFrame0ResourceURL = null;
+		
+		marcusDamagingStandingFrame0ResourceURL = null;
+		
+		marcusDamagingJumpingLeftFrame0ResourceURL = null;
+		
+		marcusDamagingJumpingRightFrame0ResourceURL = null;
+		
+		marcusDamagingJumpingFrame0ResourceURL = null;
+		
+		marcusDamagingFallingLeftFrame0ResourceURL = null;
+		
+		marcusDamagingFallingRightFrame0ResourceURL = null;
+		
+		marcusDamagingFallingFrame0ResourceURL = null;
+		
+		damageSoundResource = null;
+		
+		damageSoundResourceURL = null;
+		
+		soundResource = null;
+		
+		soundResourceURL = null;
 	}
 }
