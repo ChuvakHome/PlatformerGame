@@ -29,9 +29,11 @@ public final class MathUtil
 		return (int) d != d;
 	}
 	
-	public static boolean isFloatNumber(float f)
+	public static int roughRound(float f)
 	{
-		return (int) f != f;
+		int r = (int) f;
+		
+		return r != f ? r + 1 : r; 
 	}
 	
 	public static int roughRound(double d)
@@ -39,12 +41,5 @@ public final class MathUtil
 		int r = (int) d;
 		
 		return r != d ? r + 1 : r; 
-	}
-	
-	public static int roughRound(float f)
-	{
-		int r = (int) f;
-		
-		return r != f ? r + 1 : r; 
 	}
 }
