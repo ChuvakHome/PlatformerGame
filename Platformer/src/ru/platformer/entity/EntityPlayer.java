@@ -194,7 +194,7 @@ public class EntityPlayer extends EntityHuman
 					break;
 				case KeyEvent.VK_F:
 					spawnProjectile();
-					SoundHandler.play(soundResourceURL, 0.25);
+//					SoundHandler.play(soundResourceURL, 0.25);
 					break;
 			}
 		}
