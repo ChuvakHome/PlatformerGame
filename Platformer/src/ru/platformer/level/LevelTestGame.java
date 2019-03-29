@@ -47,9 +47,9 @@ public class LevelTestGame extends PlatformerLevel
 		player.setX(750);
 		player.setY(715);
 		
-		robot.getVisual().setBounds(0, 0, 100, 110);
+		robot.getVisual().setBounds(0, 0, 100, 150);
 		robot.setX(0);
-		robot.setY(705);
+		robot.setY(670);
 	}
 	
 	public void postInit()

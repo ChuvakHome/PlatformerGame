@@ -385,7 +385,8 @@ public class EntityHuman extends Entity implements IInventoryOwner
 		switch (state)
 		{
 			case JUMPING:				
-				jumpingOrFalling = true;
+				if (!jumpingOrFalling)
+					jumpingOrFalling = true;
 					
 				if (counter > 0)
 				{	
@@ -458,6 +459,7 @@ public class EntityHuman extends Entity implements IInventoryOwner
 				}
 				break;
 			default:
+				
 				break;
 		}
 			

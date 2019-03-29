@@ -3,7 +3,6 @@ package ru.platformer.entity;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 
-import ru.gfe.handler.SoundHandler;
 import ru.gfe.physicobject.Movement;
 import ru.gfe.sequence.Sequence;
 import ru.platformer.level.PlatformerLevel;
@@ -82,9 +81,9 @@ public class EntityPlayer extends EntityHuman
 	
 	private static URL damageSoundResourceURL = ResourceUtil.getURL(damageSoundResource);
 	
-	private static String soundResource = "resources/level/testGame/sounds/weapons/gauss/gauss_shoot.wav";
+//	private static String soundResource = "resources/level/testGame/sounds/weapons/gauss/gauss_shoot.wav";
 	
-	private static URL soundResourceURL = ResourceUtil.getURL(soundResource);
+//	private static URL soundResourceURL = ResourceUtil.getURL(soundResource);
 	
 	private boolean active;
 	
@@ -230,34 +229,43 @@ public class EntityPlayer extends EntityHuman
 		
 		String name = getCurrentSequenceName();
 		
-		if (name != null && !jumpingOrFalling)
+		if (name != null)
 		{	
 			switch (movement)
 			{
 				case LEFT:
-					moveLeft(0.05f * speed);	
-					if (!name.equals(RUNNING_LEFT_SEQUENCE_NAME) && !name.equals(DAMAGING_RUNNING_LEFT_SEQUENCE_NAME))
-						startSequence(damaging ? DAMAGING_RUNNING_LEFT_SEQUENCE : RUNNING_LEFT_SEQUENCE);
-					else if (name.equals(RUNNING_LEFT_SEQUENCE_NAME) && damaging)
-						startSequence(DAMAGING_RUNNING_LEFT_SEQUENCE);
+					moveLeft(0.05f * speed);
+					if (!jumpingOrFalling)
+					{
+						if (!name.equals(RUNNING_LEFT_SEQUENCE_NAME) && !name.equals(DAMAGING_RUNNING_LEFT_SEQUENCE_NAME))
+							startSequence(damaging ? DAMAGING_RUNNING_LEFT_SEQUENCE : RUNNING_LEFT_SEQUENCE);
+						else if (name.equals(RUNNING_LEFT_SEQUENCE_NAME) && damaging)
+							startSequence(DAMAGING_RUNNING_LEFT_SEQUENCE);
+					}
 					break;
 				case RIGHT:
-					moveRight(0.05f * speed);				
-					if (!name.equals(RUNNING_RIGHT_SEQUENCE_NAME) && !name.equals(DAMAGING_RUNNING_RIGHT_SEQUENCE_NAME))
-						startSequence(damaging ? DAMAGING_RUNNING_RIGHT_SEQUENCE : RUNNING_RIGHT_SEQUENCE);
-					else if (name.equals(RUNNING_RIGHT_SEQUENCE_NAME) && damaging)
-						startSequence(DAMAGING_RUNNING_RIGHT_SEQUENCE);
+					moveRight(0.05f * speed);
+					if (!jumpingOrFalling)
+					{
+						if (!name.equals(RUNNING_RIGHT_SEQUENCE_NAME) && !name.equals(DAMAGING_RUNNING_RIGHT_SEQUENCE_NAME))
+							startSequence(damaging ? DAMAGING_RUNNING_RIGHT_SEQUENCE : RUNNING_RIGHT_SEQUENCE);
+						else if (name.equals(RUNNING_RIGHT_SEQUENCE_NAME) && damaging)
+							startSequence(DAMAGING_RUNNING_RIGHT_SEQUENCE);
+					}
 					break;
 				case NONE:
-					if (!name.equals(STANDING_SEQUENCE_NAME) && !name.equals(DAMAGING_STANDING_SEQUENCE_NAME))
-					{
-						if (damaging)
-							startSequence(DAMAGING_STANDING_SEQUENCE);
-						else
-							resetToPrimarySequence();
+					if (!jumpingOrFalling)
+					{	
+						if (!name.equals(STANDING_SEQUENCE_NAME) && !name.equals(DAMAGING_STANDING_SEQUENCE_NAME))
+						{
+							if (damaging)
+								startSequence(DAMAGING_STANDING_SEQUENCE);
+							else
+								resetToPrimarySequence();
+						}
+						else if (name.equals(STANDING_SEQUENCE_NAME) && damaging)
+							startSequence(DAMAGING_STANDING_SEQUENCE);	
 					}
-					else if (name.equals(STANDING_SEQUENCE_NAME) && damaging)
-						startSequence(DAMAGING_STANDING_SEQUENCE);
 					break;
 			}
 		}
@@ -357,8 +365,8 @@ public class EntityPlayer extends EntityHuman
 		
 		damageSoundResourceURL = null;
 		
-		soundResource = null;
+//		soundResource = null;
 		
-		soundResourceURL = null;
+//		soundResourceURL = null;
 	}
 }

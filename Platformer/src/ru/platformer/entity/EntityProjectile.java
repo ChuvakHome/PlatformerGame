@@ -35,7 +35,7 @@ public class EntityProjectile extends PhysicObject
 		this.movement = movement;
 		this.sender = sender;
 		
-		active = true;
+		active = this.movement != Movement.NONE && this.movement != null;
 		
 		setPrimarySequence(projectileSequence);
 		
@@ -57,20 +57,23 @@ public class EntityProjectile extends PhysicObject
 	
 	public void update()
 	{
-		super.update();
-		
-		super.setX((int) posX);
-		
-		switch (movement)
-		{
-			case LEFT:
-				moveLeft();
-				break;
-			case RIGHT:
-				moveRight();
-				break;
-			case NONE:
-				break;
+		if (active)
+		{	
+			super.update();
+			
+			super.setX((int) posX);
+			
+			switch (movement)
+			{
+				case LEFT:
+					moveLeft();
+					break;
+				case RIGHT:
+					moveRight();
+					break;
+				default:
+					break;
+			}
 		}
 	}
 	
