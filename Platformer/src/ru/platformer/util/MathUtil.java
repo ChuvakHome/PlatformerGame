@@ -36,10 +36,24 @@ public final class MathUtil
 		return r != f ? r + 1 : r; 
 	}
 	
+	public static int lowRound(float f)
+	{
+		int r = (int) f;
+		
+		return r != f ? r - 1 : r; 
+	}
+	
 	public static int roughRound(double d)
 	{
 		int r = (int) d;
 		
 		return r != d ? r + 1 : r; 
+	}
+	
+	public static int lowRound(double d)
+	{
+		int r = (int) d;
+		
+		return r != d ? r - 1 : r; 
 	}
 }

@@ -3,7 +3,7 @@ package ru.platformer.entity;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 
-import ru.gfe.physicobject.Movement;
+import ru.gfe.physicobject.Direction;
 import ru.gfe.sequence.Sequence;
 import ru.platformer.level.PlatformerLevel;
 import ru.platformer.util.ResourceUtil;
@@ -175,18 +175,25 @@ public class EntityPlayer extends EntityHuman
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_LEFT:
 					if (!jumpingOrFalling)
-						movement = Movement.LEFT;
+					{
+						direction = Direction.LEFT;
+						state = State.RUNNING;
+					}
 					else
-						movement = Movement.NONE;
-					setMovementSequence();
+						direction = Direction.NONE;
 					break;
 				case KeyEvent.VK_D:
 				case KeyEvent.VK_RIGHT:
 					if (!jumpingOrFalling)
-						movement = Movement.RIGHT;
+					{
+						direction = Direction.RIGHT;
+						state = State.RUNNING;
+					}
 					else
-						movement = Movement.NONE;
-					setMovementSequence();
+						direction = Direction.NONE;
+					break;
+				case KeyEvent.VK_B:
+					processDamage(0.55f);
 					break;
 				case KeyEvent.VK_SPACE:
 					jump();
@@ -203,20 +210,18 @@ public class EntityPlayer extends EntityHuman
 			{
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_LEFT:
-					if (movement == Movement.LEFT)
-					{
-						movement = Movement.NONE;
-						resetAllSequences();
-						setMovementSequence();
+					if (direction == Direction.LEFT)
+					{	
+						direction = Direction.NONE;
+						state = State.STANDING;
 					}
 					break;
 				case KeyEvent.VK_D:
 				case KeyEvent.VK_RIGHT:
-					if (movement == Movement.RIGHT)
-					{
-						movement = Movement.NONE;
-						resetAllSequences();
-						setMovementSequence();
+					if (direction == Direction.RIGHT)
+					{	
+						direction = Direction.NONE;
+						state = State.STANDING;
 					}
 					break;
 			}
@@ -231,41 +236,15 @@ public class EntityPlayer extends EntityHuman
 		
 		if (name != null)
 		{	
-			switch (movement)
+			switch (direction)
 			{
 				case LEFT:
 					moveLeft(0.05f * speed);
-					if (!jumpingOrFalling)
-					{
-						if (!name.equals(RUNNING_LEFT_SEQUENCE_NAME) && !name.equals(DAMAGING_RUNNING_LEFT_SEQUENCE_NAME))
-							startSequence(damaging ? DAMAGING_RUNNING_LEFT_SEQUENCE : RUNNING_LEFT_SEQUENCE);
-						else if (name.equals(RUNNING_LEFT_SEQUENCE_NAME) && damaging)
-							startSequence(DAMAGING_RUNNING_LEFT_SEQUENCE);
-					}
 					break;
 				case RIGHT:
 					moveRight(0.05f * speed);
-					if (!jumpingOrFalling)
-					{
-						if (!name.equals(RUNNING_RIGHT_SEQUENCE_NAME) && !name.equals(DAMAGING_RUNNING_RIGHT_SEQUENCE_NAME))
-							startSequence(damaging ? DAMAGING_RUNNING_RIGHT_SEQUENCE : RUNNING_RIGHT_SEQUENCE);
-						else if (name.equals(RUNNING_RIGHT_SEQUENCE_NAME) && damaging)
-							startSequence(DAMAGING_RUNNING_RIGHT_SEQUENCE);
-					}
 					break;
 				case NONE:
-					if (!jumpingOrFalling)
-					{	
-						if (!name.equals(STANDING_SEQUENCE_NAME) && !name.equals(DAMAGING_STANDING_SEQUENCE_NAME))
-						{
-							if (damaging)
-								startSequence(DAMAGING_STANDING_SEQUENCE);
-							else
-								resetToPrimarySequence();
-						}
-						else if (name.equals(STANDING_SEQUENCE_NAME) && damaging)
-							startSequence(DAMAGING_STANDING_SEQUENCE);	
-					}
 					break;
 			}
 		}
@@ -275,7 +254,7 @@ public class EntityPlayer extends EntityHuman
 	
 	private void spawnProjectile()
 	{
-		EntityProjectile entityProjectile = new EntityProjectile(getX() + 100, getY() + 50, 40f, 100f, "resources/level/testGame/textures/gun/projectile/projectile.png", movement, this);
+		EntityProjectile entityProjectile = new EntityProjectile(getX() + 100, getY() + 50, 40f, 75f, "resources/level/testGame/textures/gun/projectile/projectile.png", direction, this);
 		level.addGameObject(entityProjectile);
 		
 		entityProjectile.getVisual().setBounds(getX() + 100, getY() + 50, 18, 18);

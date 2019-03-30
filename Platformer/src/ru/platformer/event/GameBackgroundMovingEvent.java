@@ -1,22 +1,22 @@
 package ru.platformer.event;
 
 import ru.gfe.event.Event;
-import ru.gfe.physicobject.Movement;
+import ru.gfe.physicobject.Direction;
 import ru.platformer.entity.GameBackground;
 
 public class GameBackgroundMovingEvent extends Event
 {
 	private GameBackground gameBackground;
 	private float factor;
-	private Movement movement;
+	private Direction direction;
 	
-	public GameBackgroundMovingEvent(GameBackground gameBackground, float factor, Movement movement)
+	public GameBackgroundMovingEvent(GameBackground gameBackground, float factor, Direction direction)
 	{
 		this.gameBackground = gameBackground;
 		this.factor = factor;
-		this.movement = movement;
+		this.direction = direction;
 	
-		data = new Object[]{this.gameBackground, this.factor, this.movement};
+		data = new Object[]{this.gameBackground, this.factor, this.direction};
 	}
 	
 	public GameBackground geGameBackground()
@@ -29,8 +29,8 @@ public class GameBackgroundMovingEvent extends Event
 		return factor;
 	}
 	
-	public Movement getMovement()
+	public Direction getDirection()
 	{
-		return movement;
+		return direction;
 	}
 }

@@ -3,8 +3,8 @@ package ru.platformer.entity;
 import java.net.URL;
 
 import ru.gfe.handler.SoundHandler;
+import ru.gfe.physicobject.Direction;
 import ru.gfe.physicobject.IPhysicObject;
-import ru.gfe.physicobject.Movement;
 import ru.platformer.item.IDamageableCreature;
 import ru.platformer.level.PlatformerLevel;
 import ru.platformer.util.ResourceUtil;
@@ -53,8 +53,6 @@ public class EntityRobot extends EntityEnemy
 	
 	private static URL explosionSoundResourceURL = ResourceUtil.getURL(explosionSoundResource);
 	
-	private boolean blocked;
-	
 	private boolean explosion;
 	
 	public EntityRobot(PlatformerLevel platformerLevel) 
@@ -101,7 +99,7 @@ public class EntityRobot extends EntityEnemy
 		
 		setDeathSequence(ResourceUtil.createSequence(robotDeathResource, 0, 16, 15));
 		
-		resistance = 0.55f;
+		resistance = 0.75f;
 		
 		startOrResumeCurrentSequence();
 	}
@@ -110,7 +108,7 @@ public class EntityRobot extends EntityEnemy
 	{
 		super.update();
 		
-		if (!blocked && getLevel() != null && getLevel() instanceof PlatformerLevel)
+		if (getLevel() != null && getLevel() instanceof PlatformerLevel)
 		{
 			if (((PlatformerLevel) getLevel()).getEntityPlayer() != null)
 			{
@@ -122,11 +120,20 @@ public class EntityRobot extends EntityEnemy
 				if (Math.abs(playerX - robotX) <= 550)
 				{
 					if (playerX < robotX)
-						movement = Movement.LEFT;
+					{
+						direction = Direction.LEFT;
+						state = State.RUNNING;
+					}
 					else if (playerX > robotX)
-						movement = Movement.RIGHT;
+					{
+						direction = Direction.RIGHT;
+						state = State.RUNNING;
+					}
 					else
-						movement = Movement.NONE;
+					{
+						direction = Direction.NONE;
+						state = State.STANDING;
+					}
 				}
 			
 				playerX = 0;
@@ -134,78 +141,21 @@ public class EntityRobot extends EntityEnemy
 			}
 		}
 		
-		if (!blocked && !jumpingOrFalling && health > 0)
+		if (isActive() && health > 0)
 		{
-			String name = getCurrentSequenceName();
-			
-			if (name != null)
-			{	
-				switch (movement)
-				{
-					case LEFT:
-						moveLeft(0.05f * speed);	
-						if (!name.equals(RUNNING_LEFT_SEQUENCE_NAME) && !name.equals(DAMAGING_RUNNING_LEFT_SEQUENCE_NAME)  && !jumpingOrFalling)
-							startSequence(damaging ? DAMAGING_RUNNING_LEFT_SEQUENCE : RUNNING_LEFT_SEQUENCE);
-						break;
-					case RIGHT:
-						moveRight(0.05f * speed);				
-						if (!name.equals(RUNNING_RIGHT_SEQUENCE_NAME) && !name.equals(DAMAGING_RUNNING_RIGHT_SEQUENCE_NAME) && !jumpingOrFalling)
-							startSequence(damaging ? DAMAGING_RUNNING_RIGHT_SEQUENCE : RUNNING_RIGHT_SEQUENCE);
-						break;
-					case NONE:
-						if (!name.equals(STANDING_SEQUENCE_NAME) && !name.equals(DAMAGING_STANDING_SEQUENCE_NAME) && !jumpingOrFalling)
-							if (damaging)
-								startSequence(DAMAGING_STANDING_SEQUENCE);
-							else
-								resetToPrimarySequence();
-						break;
-				}
+			switch (direction)
+			{
+				case LEFT:
+					moveLeft(0.05f * speed);
+					break;
+				case RIGHT:
+					moveRight(0.05f * speed);
+					break;
+				case NONE:
+					break;
 			}
-			
-			name = null;
 		}
 	}
-	
-//	public void processDamage(float damage)
-//	{
-//		super.processDamage(damage);
-//		
-//		String name = getCurrentSequenceName();
-//		
-//		if (name != null)
-//		{
-//			switch (name)
-//			{
-//				case STANDING_SEQUENCE_NAME:
-//					startSequence(DAMAGING_STANDING_SEQUENCE);
-//					break;
-//				case RUNNING_LEFT_SEQUENCE_NAME:
-//					startSequence(DAMAGING_RUNNING_LEFT_SEQUENCE);
-//					break;
-//				case RUNNING_RIGHT_SEQUENCE_NAME:
-//					startSequence(DAMAGING_RUNNING_RIGHT_SEQUENCE);
-//					break;
-//				case JUMPING_LEFT_SEQUENCE_NAME:
-//					startSequence(DAMAGING_JUMPING_LEFT_SEQUENCE);
-//					break;
-//				case JUMPING_RIGHT_SEQUENCE_NAME:
-//					startSequence(DAMAGING_JUMPING_RIGHT_SEQUENCE);
-//					break;
-//				case JUMPING_SEQUENCE_NAME:
-//					startSequence(DAMAGING_JUMPING_SEQUENCE);
-//					break;
-//				case FALLING_LEFT_SEQUENCE_NAME:
-//					startSequence(DAMAGING_FALLING_LEFT_SEQUENCE);
-//					break;
-//				case FALLING_RIGHT_SEQUENCE_NAME:
-//					startSequence(DAMAGING_FALLING_RIGHT_SEQUENCE);
-//					break;
-//				case FALLING_SEQUENCE_NAME:
-//					startSequence(DAMAGING_FALLING_SEQUENCE);
-//					break;
-//			}
-//		}
-//	}
 	
 	public void processCollision(IPhysicObject iGameObject)
 	{
@@ -221,11 +171,6 @@ public class EntityRobot extends EntityEnemy
 		
 		SoundHandler.play(explosionSoundResourceURL);
 	}
-//	
-//	public boolean isActive()
-//	{
-//		return ;
-//	}
 	
 	protected void destroyGameObject()
 	{
@@ -272,8 +217,6 @@ public class EntityRobot extends EntityEnemy
 		explosionSoundResource = null;
 		
 		explosionSoundResourceURL = null;
-		
-		blocked = false;
 		
 		explosion = false;
 	}

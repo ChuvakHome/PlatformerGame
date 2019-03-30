@@ -5,8 +5,9 @@ import java.net.URL;
 import javax.swing.JLabel;
 
 import ru.gfe.handler.SoundHandler;
-import ru.gfe.physicobject.Movement;
+import ru.gfe.physicobject.Direction;
 import ru.gfe.sequence.Sequence;
+import ru.platformer.caption.Caption;
 import ru.platformer.item.IInventoryOwner;
 import ru.platformer.item.Item;
 import ru.platformer.item.ItemStack;
@@ -17,28 +18,28 @@ public class EntityHuman extends Entity implements IInventoryOwner
 	public static final int RUNNING_LEFT_SEQUENCE = 0;
 	public static final int RUNNING_RIGHT_SEQUENCE = 1;
 	
-	public static final int JUMPING_LEFT_SEQUENCE = 3;
-	public static final int JUMPING_RIGHT_SEQUENCE = 4;
-	public static final int JUMPING_SEQUENCE = 5;
+	public static final int JUMPING_LEFT_SEQUENCE = 2;
+	public static final int JUMPING_RIGHT_SEQUENCE = 3;
+	public static final int JUMPING_SEQUENCE = 4;
 	
-	public static final int FALLING_LEFT_SEQUENCE = 6;
-	public static final int FALLING_RIGHT_SEQUENCE = 7;
-	public static final int FALLING_SEQUENCE = 8;
+	public static final int FALLING_LEFT_SEQUENCE = 5;
+	public static final int FALLING_RIGHT_SEQUENCE = 6;
+	public static final int FALLING_SEQUENCE = 7;
 	
-	public static final int DAMAGING_STANDING_SEQUENCE = 9;
+	public static final int DAMAGING_STANDING_SEQUENCE = 7;
 	
-	public static final int DAMAGING_RUNNING_LEFT_SEQUENCE = 10;
-	public static final int DAMAGING_RUNNING_RIGHT_SEQUENCE = 11;
+	public static final int DAMAGING_RUNNING_LEFT_SEQUENCE = 8;
+	public static final int DAMAGING_RUNNING_RIGHT_SEQUENCE = 9;
 	
-	public static final int DAMAGING_JUMPING_LEFT_SEQUENCE = 12;
-	public static final int DAMAGING_JUMPING_RIGHT_SEQUENCE = 13;
-	public static final int DAMAGING_JUMPING_SEQUENCE = 14;
+	public static final int DAMAGING_JUMPING_LEFT_SEQUENCE = 10;
+	public static final int DAMAGING_JUMPING_RIGHT_SEQUENCE = 12;
+	public static final int DAMAGING_JUMPING_SEQUENCE = 13;
 	
-	public static final int DAMAGING_FALLING_LEFT_SEQUENCE = 15;
-	public static final int DAMAGING_FALLING_RIGHT_SEQUENCE = 16;
-	public static final int DAMAGING_FALLING_SEQUENCE = 17;
+	public static final int DAMAGING_FALLING_LEFT_SEQUENCE = 14;
+	public static final int DAMAGING_FALLING_RIGHT_SEQUENCE = 15;
+	public static final int DAMAGING_FALLING_SEQUENCE = 16;
 	
-	public static final int DEATH_SEQUENCE = 18;
+	public static final int DEATH_SEQUENCE = 17;
 	
 	public static final String STANDING_SEQUENCE_NAME = "standing";
 	
@@ -76,7 +77,9 @@ public class EntityHuman extends Entity implements IInventoryOwner
 	
 	public static final long DELAY = 9;
 	
-	protected Movement movement;
+	public static final long DAMAGE_TIME = 1500;
+	
+	protected Direction direction;
 	protected State state;
 	
 	private int counter;
@@ -90,14 +93,7 @@ public class EntityHuman extends Entity implements IInventoryOwner
 	
 	protected boolean damaging;
 	
-	private boolean damage0;
-	
-	private int ignoreTime = 0;
-	
-	private int ignoreTime2 = 0;
-	
-	private final int damageIgnoreTime;
-	private final int damageIgnoreTime2;
+	private long damageTime = 0;
 	
 	private boolean deathSequenceSetted;
 	
@@ -110,12 +106,11 @@ public class EntityHuman extends Entity implements IInventoryOwner
 		super(platformerLevel, new JLabel());
 		
 		state = State.STANDING;
-		movement = Movement.NONE;
+		direction = Direction.NONE;
 		
 		health = 100f;
 		
-		damageIgnoreTime = damageIgnoringTime;
-		damageIgnoreTime2 = damageIgnoringTime2;
+		damageTime = 0;
 		
 		inventory = new ItemStack[50];
 	}
@@ -404,19 +399,6 @@ public class EntityHuman extends Entity implements IInventoryOwner
 					state = State.FALLING;
 					delayCounter = 0;
 					counter = JUMP_DELTA_Y;
-						
-					switch (movement)
-					{
-						case LEFT:
-							startSequence(damaging ? DAMAGING_FALLING_LEFT_SEQUENCE : FALLING_LEFT_SEQUENCE);
-							break;
-						case RIGHT:
-							startSequence(damaging ? DAMAGING_FALLING_RIGHT_SEQUENCE : FALLING_RIGHT_SEQUENCE);
-							break;
-						case NONE:
-							startSequence(damaging ? DAMAGING_FALLING_SEQUENCE : FALLING_SEQUENCE);
-							break;
-					}
 				}
 					
 				break;
@@ -434,22 +416,14 @@ public class EntityHuman extends Entity implements IInventoryOwner
 				}
 				else
 				{
-					switch (movement)
+					switch (direction)
 					{
 						case LEFT:
-							state = State.RUNNING;
-							startSequence(damaging ? DAMAGING_RUNNING_LEFT_SEQUENCE : RUNNING_LEFT_SEQUENCE);
-							break;
 						case RIGHT:
 							state = State.RUNNING;
-							startSequence(damaging ? DAMAGING_RUNNING_RIGHT_SEQUENCE : RUNNING_RIGHT_SEQUENCE);
 							break;
 						case NONE:
 							state = State.STANDING;
-							if (damaging)
-								startSequence(DAMAGING_STANDING_SEQUENCE);
-							else
-								resetToPrimarySequence();
 							break;
 					}
 						
@@ -459,58 +433,37 @@ public class EntityHuman extends Entity implements IInventoryOwner
 				}
 				break;
 			default:
-				
 				break;
 		}
 			
 		if (health > 0)
-		{
-			if (ignoreTime > 0)
-				--ignoreTime;
+		{		
+			damaging = damageTime > 0;
+			
+			Caption cap = Caption.valueOf("");
 				
-			if (ignoreTime2 > 0)
-				--ignoreTime2;
-			else if (ignoreTime == 0)
-				damaging = false;
+			if (damaging)
+				cap.append("damaging_");
 				
-			if (damage0 != damaging)
+			cap.append(state.toString().toLowerCase());
+				
+			switch (direction)
 			{
-				if (jumpingOrFalling)
-				{
-					switch (movement)
-					{
-						case LEFT:
-							startSequence(damaging ? DAMAGING_JUMPING_LEFT_SEQUENCE : JUMPING_LEFT_SEQUENCE);
-							break;
-						case RIGHT:
-							startSequence(damaging ? DAMAGING_JUMPING_RIGHT_SEQUENCE : JUMPING_RIGHT_SEQUENCE);
-							break;
-						case NONE:
-							startSequence(damaging ? DAMAGING_JUMPING_SEQUENCE : JUMPING_SEQUENCE);
-							break;
-					}
-				}
-				else
-				{
-					switch (movement)
-					{
-						case LEFT:
-							startSequence(damaging ? DAMAGING_RUNNING_LEFT_SEQUENCE : RUNNING_LEFT_SEQUENCE);
-							break;
-						case RIGHT:
-							startSequence(damaging ? DAMAGING_RUNNING_RIGHT_SEQUENCE : RUNNING_RIGHT_SEQUENCE);
-							break;
-						case NONE:
-							if (damaging)
-								startSequence(DAMAGING_STANDING_SEQUENCE);
-							else
-								resetToPrimarySequence();
-							break;
-					}
-				}
-					
-				damage0 = damaging;
+				case LEFT:
+				case RIGHT:
+					cap.append("_").append(direction.toString().toLowerCase());
+					break;
+				default:
+					break;
 			}
+			
+			if (!getCurrentSequenceName().equals(cap.toString()))
+				startSequence(getSequenceByName(cap.toString()));
+				
+			cap = null;
+				
+			if (damageTime > 0)
+				--damageTime;
 		}
 		else if (getCurrentSequenceName() != null && getCurrentSequenceName().equals(DEATH_SEQUENCE_NAME) && currentSequenceStarted() && currentSequenceEnded())
 			level.removeGameObject(id);
@@ -520,7 +473,7 @@ public class EntityHuman extends Entity implements IInventoryOwner
 	{	
 		if (!jumpingOrFalling)
 		{			
-			switch (movement)
+			switch (direction)
 			{
 				case LEFT:
 					startSequence(damaging ? DAMAGING_RUNNING_LEFT_SEQUENCE : RUNNING_LEFT_SEQUENCE);
@@ -542,7 +495,7 @@ public class EntityHuman extends Entity implements IInventoryOwner
 	{
 		if (!jumpingOrFalling)
 		{
-			switch (movement)
+			switch (direction)
 			{
 				case LEFT:
 					startSequence(damaging ? DAMAGING_JUMPING_LEFT_SEQUENCE : JUMPING_LEFT_SEQUENCE);
@@ -583,7 +536,8 @@ public class EntityHuman extends Entity implements IInventoryOwner
 	
 	protected void onDeath()
 	{
-		movement = Movement.NONE;
+		state = State.STANDING;
+		direction = Direction.NONE;
 		
 		if (deathSequenceSetted)
 			startSequence(DEATH_SEQUENCE);
@@ -601,7 +555,7 @@ public class EntityHuman extends Entity implements IInventoryOwner
 		counter = 0;
 		delayCounter = 0;
 			
-		movement = null;
+		direction = null;
 			
 		state = null;
 	}
@@ -620,17 +574,14 @@ public class EntityHuman extends Entity implements IInventoryOwner
 	
 	public void processDamage(float damage)
 	{
-		if (isActive() && ignoreTime == 0 && damage > 0)
+		if (isActive() && damage > 0)
 		{
 			super.processDamage(damage);
 			
 			if (damageResourceURL != null)
 				SoundHandler.play(damageResourceURL);
 			
-			damaging = !damaging ? true : damaging;
-			
-			ignoreTime = damageIgnoreTime;
-			ignoreTime2 = damageIgnoreTime2;
+			damageTime = DAMAGE_TIME;
 		}
 	}
 	
@@ -659,5 +610,52 @@ public class EntityHuman extends Entity implements IInventoryOwner
 		}
 		else
 			return 0;
+	}
+	
+	public int getSequenceByName(String sequenceName)
+	{
+		switch (sequenceName)
+		{
+			case STANDING_SEQUENCE_NAME:
+				return -1;
+			case RUNNING_LEFT_SEQUENCE_NAME:
+				return RUNNING_LEFT_SEQUENCE;
+			case RUNNING_RIGHT_SEQUENCE_NAME:
+				return RUNNING_RIGHT_SEQUENCE;
+			case JUMPING_LEFT_SEQUENCE_NAME:
+				return JUMPING_LEFT_SEQUENCE;
+			case JUMPING_RIGHT_SEQUENCE_NAME:
+				return JUMPING_RIGHT_SEQUENCE;
+			case JUMPING_SEQUENCE_NAME:
+				return JUMPING_SEQUENCE;
+			case FALLING_LEFT_SEQUENCE_NAME:
+				return FALLING_LEFT_SEQUENCE;
+			case FALLING_RIGHT_SEQUENCE_NAME:
+				return FALLING_RIGHT_SEQUENCE;
+			case FALLING_SEQUENCE_NAME:
+				return FALLING_SEQUENCE;
+			case DAMAGING_STANDING_SEQUENCE_NAME:
+				return DAMAGING_STANDING_SEQUENCE;
+			case DAMAGING_RUNNING_LEFT_SEQUENCE_NAME:
+				return DAMAGING_RUNNING_LEFT_SEQUENCE;
+			case DAMAGING_RUNNING_RIGHT_SEQUENCE_NAME:
+				return DAMAGING_RUNNING_RIGHT_SEQUENCE;
+			case DAMAGING_JUMPING_LEFT_SEQUENCE_NAME:
+				return DAMAGING_JUMPING_LEFT_SEQUENCE;
+			case DAMAGING_JUMPING_RIGHT_SEQUENCE_NAME:
+				return DAMAGING_JUMPING_RIGHT_SEQUENCE;
+			case DAMAGING_JUMPING_SEQUENCE_NAME:
+				return DAMAGING_JUMPING_SEQUENCE;
+			case DAMAGING_FALLING_LEFT_SEQUENCE_NAME:
+				return DAMAGING_FALLING_LEFT_SEQUENCE;
+			case DAMAGING_FALLING_RIGHT_SEQUENCE_NAME:
+				return DAMAGING_FALLING_RIGHT_SEQUENCE;
+			case DAMAGING_FALLING_SEQUENCE_NAME:
+				return DAMAGING_FALLING_SEQUENCE;
+			case DEATH_SEQUENCE_NAME:
+				return DEATH_SEQUENCE;
+		}
+		
+		return SEQUENCE_ARRAY_SIZE;
 	}
 }

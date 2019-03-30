@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 
 import ru.gfe.engine.GameFusionEngine;
 import ru.gfe.handler.ResourceHandler;
-import ru.gfe.physicobject.Movement;
+import ru.gfe.physicobject.Direction;
 import ru.platformer.event.GameBackgroundMovingEvent;
 import ru.platformer.level.PlatformerLevel;
 import ru.platformer.util.ResourceUtil;
@@ -21,7 +21,7 @@ public class GameBackground
 	
 	protected Image image;
 	
-	protected Movement movement;
+	protected Direction direction;
 	
 	private JLabel body;
 	
@@ -40,7 +40,7 @@ public class GameBackground
 	{	
 		platformerLevel = level;
 		
-		movement = Movement.NONE;
+		direction = Direction.NONE;
 		
 		image = ResourceHandler.getImage(url);
 		
@@ -60,10 +60,10 @@ public class GameBackground
 		if (Math.abs((int) posX) < Math.abs(maxX))	
 		{
 			posX -= factor;
-			GameFusionEngine.processEvent(new GameBackgroundMovingEvent(this, factor, Movement.LEFT));
+			GameFusionEngine.processEvent(new GameBackgroundMovingEvent(this, factor, Direction.LEFT));
 		}
 		else
-			GameFusionEngine.processEvent(new GameBackgroundMovingEvent(this, factor, Movement.NONE));
+			GameFusionEngine.processEvent(new GameBackgroundMovingEvent(this, factor, Direction.NONE));
 	}
 	
 	public void moveRight(float factor)
@@ -71,10 +71,10 @@ public class GameBackground
 		if (posX < 0)
 		{
 			posX += factor;
-			GameFusionEngine.processEvent(new GameBackgroundMovingEvent(this, factor, Movement.RIGHT));
+			GameFusionEngine.processEvent(new GameBackgroundMovingEvent(this, factor, Direction.RIGHT));
 		}
 		else
-			GameFusionEngine.processEvent(new GameBackgroundMovingEvent(this, factor, Movement.NONE));
+			GameFusionEngine.processEvent(new GameBackgroundMovingEvent(this, factor, Direction.NONE));
 	}
 	
 	public void processKeyEvent(KeyEvent e)
@@ -87,16 +87,16 @@ public class GameBackground
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_RIGHT:
 				case KeyEvent.VK_D:
-					switch (platformerLevel.getEntityPlayer().movement)
+					switch (platformerLevel.getEntityPlayer().direction)
 					{
 						case LEFT:
-							movement = Movement.RIGHT;
+							direction = Direction.RIGHT;
 							break;
 						case RIGHT:
-							movement = Movement.LEFT;
+							direction = Direction.LEFT;
 							break;
 						case NONE:
-							movement = Movement.NONE;
+							direction = Direction.NONE;
 							break;
 					}
 					break;
@@ -110,7 +110,8 @@ public class GameBackground
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_RIGHT:
 				case KeyEvent.VK_D:
-					movement = Movement.NONE;
+					if (platformerLevel.getEntityPlayer().direction == Direction.NONE)
+						direction = Direction.NONE;
 					break;
 			}
 		}
@@ -132,7 +133,7 @@ public class GameBackground
 		
 		float factor = 0.05f * (platformerLevel.getEntityPlayer().speed + acceleration);
 		
-		switch (movement)
+		switch (direction)
 		{
 			case LEFT:
 				moveLeft(factor);

@@ -23,7 +23,7 @@ public abstract class MovingPhysicObject extends PhysicObject
 		{	
 			float factor = event.getFactor();
 			
-			switch (event.getMovement())
+			switch (event.getDirection())
 			{
 				case LEFT:
 					moveLeft(factor);

@@ -4,8 +4,8 @@ import java.net.URL;
 
 import javax.swing.JLabel;
 
+import ru.gfe.physicobject.Direction;
 import ru.gfe.physicobject.IPhysicObject;
-import ru.gfe.physicobject.Movement;
 import ru.gfe.physicobject.PhysicObject;
 import ru.gfe.sequence.Sequence;
 import ru.platformer.item.IDamageableCreature;
@@ -18,13 +18,13 @@ public class EntityProjectile extends PhysicObject
 	private double posX;
 	private float damage;
 	
-	private Movement movement;
+	private Direction direction;
 	
 	private boolean active;
 	
 	private IInventoryOwner sender;
 	
-	public EntityProjectile(int posX, int posY, float speed, float damage, Sequence projectileSequence, Movement movement, IInventoryOwner sender) 
+	public EntityProjectile(int posX, int posY, float speed, float damage, Sequence projectileSequence, Direction direction, IInventoryOwner sender) 
 	{
 		super(new JLabel());
 		
@@ -32,10 +32,10 @@ public class EntityProjectile extends PhysicObject
 		this.posY = posY;
 		this.speed = speed;
 		this.damage = damage;
-		this.movement = movement;
+		this.direction = direction;
 		this.sender = sender;
 		
-		active = this.movement != Movement.NONE && this.movement != null;
+		active = this.direction != Direction.NONE && this.direction != null;
 		
 		setPrimarySequence(projectileSequence);
 		
@@ -45,14 +45,14 @@ public class EntityProjectile extends PhysicObject
 		startOrResumeCurrentSequence();
 	}
 	
-	public EntityProjectile(int posX, int posY, float speed, float damage, URL textureResourceURL, Movement movement, IInventoryOwner sender) 
+	public EntityProjectile(int posX, int posY, float speed, float damage, URL textureResourceURL, Direction direction, IInventoryOwner sender) 
 	{
-		this(posX, posY, speed, damage, new Sequence(textureResourceURL), movement, sender);
+		this(posX, posY, speed, damage, new Sequence(textureResourceURL), direction, sender);
 	}
 	
-	public EntityProjectile(int posX, int posY, float speed, float damage, String textureResource, Movement movement, IInventoryOwner sender) 
+	public EntityProjectile(int posX, int posY, float speed, float damage, String textureResource, Direction direction, IInventoryOwner sender) 
 	{
-		this(posX, posY, speed, damage, ResourceUtil.getURL(textureResource), movement, sender);
+		this(posX, posY, speed, damage, ResourceUtil.getURL(textureResource), direction, sender);
 	}
 	
 	public void update()
@@ -63,7 +63,7 @@ public class EntityProjectile extends PhysicObject
 			
 			super.setX((int) posX);
 			
-			switch (movement)
+			switch (direction)
 			{
 				case LEFT:
 					moveLeft();
