@@ -56,7 +56,7 @@ public class LevelTestGame extends PlatformerLevel
 	{
 		super.postInit();
 		
-//		SoundHandler.playAndLoop(titleResourceURL, 0.45);
+		SoundHandler.playAndLoop(titleResourceURL, 0.45);
 	}
 	
 	public void update()

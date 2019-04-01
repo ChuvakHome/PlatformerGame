@@ -77,7 +77,7 @@ public class EntityHuman extends Entity implements IInventoryOwner
 	
 	public static final long DELAY = 9;
 	
-	public static final long DAMAGE_TIME = 1500;
+	public static final long DAMAGE_TIME = 1000;
 	
 	protected Direction direction;
 	protected State state;
@@ -574,7 +574,7 @@ public class EntityHuman extends Entity implements IInventoryOwner
 	
 	public void processDamage(float damage)
 	{
-		if (isActive() && damage > 0)
+		if (isActive() && damage > 0 && damageTime == 0)
 		{
 			super.processDamage(damage);
 			

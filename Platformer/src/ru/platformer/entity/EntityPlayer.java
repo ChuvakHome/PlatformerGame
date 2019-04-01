@@ -204,7 +204,7 @@ public class EntityPlayer extends EntityHuman
 					break;
 			}
 		}
-		else if (e.getID() == KeyEvent.KEY_RELEASED)
+		else if (e.getID() == KeyEvent.KEY_RELEASED && !jumpingOrFalling)
 		{	
 			switch (e.getKeyCode()) 
 			{
@@ -248,6 +248,9 @@ public class EntityPlayer extends EntityHuman
 					break;
 			}
 		}
+		
+		if (health <= 0)
+			System.out.println("Ouch! " + health);
 		
 		name = null;
 	}
