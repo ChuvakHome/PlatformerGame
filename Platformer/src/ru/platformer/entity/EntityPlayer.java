@@ -249,9 +249,6 @@ public class EntityPlayer extends EntityHuman
 			}
 		}
 		
-		if (health <= 0)
-			System.out.println("Ouch! " + health);
-		
 		name = null;
 	}
 	
